@@ -1074,6 +1074,10 @@ func (daemon *Daemon) createSpec(ctx context.Context, daemonCfg *configStore, c 
 		opts []coci.SpecOpts
 		s    = oci.DefaultSpec()
 	)
+	annotations := append(c.HostConfig.Annotations, map[string]string{
+		"imageID":   c.Image,
+		"imageName": c.Config.Image,
+	}...)
 	opts = append(opts,
 		withCommonOptions(daemon, &daemonCfg.Config, c),
 		withCgroups(daemon, &daemonCfg.Config, c),
@@ -1089,7 +1093,7 @@ func (daemon *Daemon) createSpec(ctx context.Context, daemonCfg *configStore, c 
 		WithApparmor(c),
 		WithSelinux(c),
 		WithOOMScore(&c.HostConfig.OomScoreAdj),
-		coci.WithAnnotations(c.HostConfig.Annotations),
+		coci.WithAnnotations(annotations),
 		WithUser(c),
 	)
 
